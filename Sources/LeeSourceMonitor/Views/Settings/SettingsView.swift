@@ -37,17 +37,31 @@ struct SettingsView: View {
                 .padding(.vertical, 4)
             }
 
-            // Card order
-            GroupBox("Dashboard Order (drag to reorder)") {
+            // Card visibility & order
+            GroupBox("Dashboard Cards (drag to reorder)") {
                 List {
                     ForEach(settings.cardOrder) { card in
                         HStack {
+                            Button {
+                                settings.toggleCard(card)
+                            } label: {
+                                Image(systemName: settings.isCardVisible(card) ? "eye.fill" : "eye.slash")
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(settings.isCardVisible(card) ? .primary : .tertiary)
+                                    .frame(width: 20)
+                            }
+                            .buttonStyle(.plain)
+
                             Image(systemName: card.icon)
                                 .frame(width: 20)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(settings.isCardVisible(card) ? .secondary : .tertiary)
+
                             Text(card.rawValue)
                                 .font(.system(size: 12))
+                                .foregroundStyle(settings.isCardVisible(card) ? .primary : .tertiary)
+
                             Spacer()
+
                             Image(systemName: "line.3.horizontal")
                                 .foregroundStyle(.tertiary)
                         }
@@ -60,7 +74,7 @@ struct SettingsView: View {
 
                 HStack {
                     Spacer()
-                    Button("Reset Order") {
+                    Button("Reset All") {
                         settings.resetOrder()
                     }
                     .font(.system(size: 11))

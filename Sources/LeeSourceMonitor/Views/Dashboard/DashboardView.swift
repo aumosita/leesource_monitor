@@ -12,7 +12,7 @@ struct DashboardView: View {
 
             ScrollView {
                 LazyVGrid(columns: gridItems, spacing: AppTheme.Dimensions.gridSpacing) {
-                    ForEach(settings.cardOrder) { card in
+                    ForEach(settings.visibleCards) { card in
                         cardView(for: card, columns: columns)
                     }
                 }

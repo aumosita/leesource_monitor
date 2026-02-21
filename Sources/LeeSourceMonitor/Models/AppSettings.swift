@@ -21,6 +21,18 @@ final class AppSettings {
         }
     }
 
+    // Hidden cards
+    var hiddenCards: Set<String> {
+        didSet {
+            UserDefaults.standard.set(Array(hiddenCards), forKey: "hiddenCards")
+        }
+    }
+
+    // Visible cards in order
+    var visibleCards: [CardType] {
+        cardOrder.filter { !hiddenCards.contains($0.rawValue) }
+    }
+
     enum CardType: String, CaseIterable, Identifiable, Codable {
         case cpu = "CPU"
         case memory = "Memory"
@@ -49,9 +61,14 @@ final class AppSettings {
         let savedInterval = UserDefaults.standard.double(forKey: "pollingInterval")
         self.pollingInterval = savedInterval > 0 ? savedInterval : 1.0
 
+        if let savedHidden = UserDefaults.standard.stringArray(forKey: "hiddenCards") {
+            self.hiddenCards = Set(savedHidden)
+        } else {
+            self.hiddenCards = []
+        }
+
         if let savedOrder = UserDefaults.standard.stringArray(forKey: "cardOrder") {
             self.cardOrder = savedOrder.compactMap { CardType(rawValue: $0) }
-            // Add any missing cards
             for card in CardType.allCases where !self.cardOrder.contains(card) {
                 self.cardOrder.append(card)
             }
@@ -64,7 +81,20 @@ final class AppSettings {
         cardOrder.move(fromOffsets: source, toOffset: destination)
     }
 
+    func toggleCard(_ card: CardType) {
+        if hiddenCards.contains(card.rawValue) {
+            hiddenCards.remove(card.rawValue)
+        } else {
+            hiddenCards.insert(card.rawValue)
+        }
+    }
+
+    func isCardVisible(_ card: CardType) -> Bool {
+        !hiddenCards.contains(card.rawValue)
+    }
+
     func resetOrder() {
         cardOrder = CardType.allCases
+        hiddenCards = []
     }
 }

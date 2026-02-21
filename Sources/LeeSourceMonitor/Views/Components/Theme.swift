@@ -64,8 +64,8 @@ enum AppTheme {
     // MARK: - Dimensions
     enum Dimensions {
         static let cardCornerRadius: CGFloat = 10
-        static let cardPadding: CGFloat = 10
-        static let gridSpacing: CGFloat = 8
+        static let cardPadding: CGFloat = 8
+        static let gridSpacing: CGFloat = 6
         static let chartHeight: CGFloat = 70
         static let menuBarWidth: CGFloat = 320
     }
