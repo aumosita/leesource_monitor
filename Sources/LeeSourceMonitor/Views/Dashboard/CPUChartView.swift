@@ -5,7 +5,9 @@ struct CPUChartView: View {
     let metrics: CPUMetrics
     let history: [MetricSample]
     let coreHistory: [[MetricSample]]
-    var compact: Bool = false
+    var expanded: Bool = false
+
+    private var chartHeight: CGFloat { expanded ? 120 : AppTheme.Dimensions.chartHeight }
 
     var body: some View {
         MetricCardView(
@@ -14,35 +16,50 @@ struct CPUChartView: View {
             accentColor: AppTheme.Colors.cpuGradientStart,
             valueText: Formatters.percentage(metrics.totalUsage)
         ) {
-            VStack(spacing: 4) {
-                if !history.isEmpty {
-                    Chart(history) { sample in
-                        LineMark(
-                            x: .value("Time", sample.timestamp),
-                            y: .value("Usage", sample.value)
-                        )
-                        .foregroundStyle(AppTheme.Colors.cpuGradientStart)
-                        .lineStyle(StrokeStyle(lineWidth: 1.5))
+            VStack(spacing: expanded ? 8 : 4) {
+                if expanded {
+                    HStack {
+                        Text("\(metrics.coreCount) cores")
+                            .font(.system(size: 10))
+                            .foregroundStyle(AppTheme.Colors.textTertiary)
+                        Spacer()
                     }
-                    .chartYScale(domain: 0...100)
-                    .chartYAxis(.hidden)
-                    .chartXAxis(.hidden)
-                    .frame(height: AppTheme.Dimensions.chartHeight)
                 }
 
-                if !metrics.coreUsages.isEmpty {
-                    HStack(spacing: 2) {
-                        ForEach(0..<metrics.coreUsages.count, id: \.self) { i in
-                            UsageBar(
-                                value: metrics.coreUsages[i],
-                                maxValue: 100,
-                                color: AppTheme.Colors.usageColor(metrics.coreUsages[i]),
-                                height: 3
-                            )
+                Chart(history) { sample in
+                    LineMark(
+                        x: .value("Time", sample.timestamp),
+                        y: .value("Usage", sample.value)
+                    )
+                    .foregroundStyle(AppTheme.Colors.cpuGradientStart)
+                    .lineStyle(StrokeStyle(lineWidth: 1.5))
+                }
+                .chartYScale(domain: 0...100)
+                .chartYAxis(expanded ? .automatic : .hidden)
+                .chartXAxis(.hidden)
+                .frame(height: chartHeight)
+
+                // Per-core bars
+                HStack(spacing: 2) {
+                    ForEach(0..<max(metrics.coreUsages.count, 1), id: \.self) { i in
+                        if i < metrics.coreUsages.count {
+                            VStack(spacing: 1) {
+                                UsageBar(
+                                    value: metrics.coreUsages[i],
+                                    maxValue: 100,
+                                    color: AppTheme.Colors.usageColor(metrics.coreUsages[i]),
+                                    height: expanded ? 5 : 3
+                                )
+                                if expanded {
+                                    Text("\(Int(metrics.coreUsages[i]))%")
+                                        .font(.system(size: 6, design: .monospaced))
+                                        .foregroundStyle(AppTheme.Colors.textTertiary)
+                                }
+                            }
                         }
                     }
-                    .frame(height: 3)
                 }
+                .frame(minHeight: expanded ? 16 : 3)
             }
         }
     }

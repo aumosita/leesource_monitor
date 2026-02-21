@@ -4,7 +4,9 @@ import Charts
 struct GPUChartView: View {
     let metrics: GPUMetrics
     let history: [MetricSample]
-    var compact: Bool = false
+    var expanded: Bool = false
+
+    private var chartHeight: CGFloat { expanded ? 120 : AppTheme.Dimensions.chartHeight }
 
     var body: some View {
         MetricCardView(
@@ -13,33 +15,35 @@ struct GPUChartView: View {
             accentColor: AppTheme.Colors.gpuGradientStart,
             valueText: Formatters.percentage(metrics.deviceUtilization)
         ) {
-            VStack(spacing: 4) {
+            VStack(spacing: expanded ? 8 : 4) {
                 HStack(spacing: 8) {
-                    Text("R:\(Formatters.percentage(metrics.rendererUtilization))")
-                        .font(.system(size: 9, design: .rounded))
+                    Text("Renderer: \(expanded ? "" : "")\(Formatters.percentage(metrics.rendererUtilization))")
+                        .font(.system(size: expanded ? 10 : 9, design: .rounded))
                         .foregroundStyle(AppTheme.Colors.textTertiary)
-                    Text("T:\(Formatters.percentage(metrics.tilerUtilization))")
-                        .font(.system(size: 9, design: .rounded))
-                        .foregroundStyle(AppTheme.Colors.textTertiary)
-                    Text("VRAM:\(Formatters.bytes(metrics.inUseSystemMemory))")
-                        .font(.system(size: 9, design: .rounded))
+                    Text("Tiler: \(Formatters.percentage(metrics.tilerUtilization))")
+                        .font(.system(size: expanded ? 10 : 9, design: .rounded))
                         .foregroundStyle(AppTheme.Colors.textTertiary)
                     Spacer()
                 }
 
-                if !history.isEmpty {
-                    Chart(history) { sample in
-                        LineMark(
-                            x: .value("Time", sample.timestamp),
-                            y: .value("Usage", sample.value)
-                        )
-                        .foregroundStyle(AppTheme.Colors.gpuGradientStart)
-                        .lineStyle(StrokeStyle(lineWidth: 1.5))
-                    }
-                    .chartYScale(domain: 0...100)
-                    .chartYAxis(.hidden)
-                    .chartXAxis(.hidden)
-                    .frame(height: AppTheme.Dimensions.chartHeight)
+                Chart(history) { sample in
+                    LineMark(
+                        x: .value("Time", sample.timestamp),
+                        y: .value("Usage", sample.value)
+                    )
+                    .foregroundStyle(AppTheme.Colors.gpuGradientStart)
+                    .lineStyle(StrokeStyle(lineWidth: 1.5))
+                }
+                .chartYScale(domain: 0...100)
+                .chartYAxis(expanded ? .automatic : .hidden)
+                .chartXAxis(.hidden)
+                .frame(height: chartHeight)
+
+                HStack {
+                    Text("VRAM: \(Formatters.bytes(metrics.inUseSystemMemory))")
+                        .font(.system(size: expanded ? 10 : 9, design: .rounded))
+                        .foregroundStyle(AppTheme.Colors.textTertiary)
+                    Spacer()
                 }
             }
         }
