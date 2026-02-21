@@ -12,25 +12,30 @@ struct NetworkChartView: View {
     var body: some View {
         MetricCardView(title: "Network", icon: "network", accentColor: AppTheme.Colors.networkIn) {
             VStack(spacing: expanded ? 6 : 4) {
-                HStack(spacing: 10) {
-                    HStack(spacing: 3) {
+                HStack(spacing: 8) {
+                    HStack(spacing: 2) {
                         Text("↓")
-                            .font(.system(size: expanded ? 12 : 10, weight: .bold))
+                            .font(.system(size: 10, weight: .bold))
                             .foregroundStyle(AppTheme.Colors.networkIn)
                         Text(Formatters.speed(metrics.speedIn))
-                            .font(.system(size: expanded ? 13 : 11, weight: .semibold, design: .rounded))
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
                             .foregroundStyle(AppTheme.Colors.networkIn)
                     }
-                    HStack(spacing: 3) {
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    HStack(spacing: 2) {
                         Text("↑")
-                            .font(.system(size: expanded ? 12 : 10, weight: .bold))
+                            .font(.system(size: 10, weight: .bold))
                             .foregroundStyle(AppTheme.Colors.networkOut)
                         Text(Formatters.speed(metrics.speedOut))
-                            .font(.system(size: expanded ? 13 : 11, weight: .semibold, design: .rounded))
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
                             .foregroundStyle(AppTheme.Colors.networkOut)
                     }
-                    Spacer()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    Spacer(minLength: 0)
                 }
+                .frame(height: 16)
 
                 // Download
                 Chart(inHistory) { sample in
@@ -57,14 +62,19 @@ struct NetworkChartView: View {
                 .frame(height: chartHeight)
 
                 HStack {
-                    Text("Total ↓\(Formatters.bytes(metrics.bytesIn))")
-                        .font(.system(size: expanded ? 9 : 8, design: .rounded))
+                    Text("↓\(Formatters.bytes(metrics.bytesIn))")
+                        .font(.system(size: 8, design: .rounded))
                         .foregroundStyle(AppTheme.Colors.textTertiary)
-                    Spacer()
-                    Text("Total ↑\(Formatters.bytes(metrics.bytesOut))")
-                        .font(.system(size: expanded ? 9 : 8, design: .rounded))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                    Spacer(minLength: 0)
+                    Text("↑\(Formatters.bytes(metrics.bytesOut))")
+                        .font(.system(size: 8, design: .rounded))
                         .foregroundStyle(AppTheme.Colors.textTertiary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                 }
+                .frame(height: 12)
             }
         }
     }

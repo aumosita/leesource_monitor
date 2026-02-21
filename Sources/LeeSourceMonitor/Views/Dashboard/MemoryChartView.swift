@@ -67,28 +67,34 @@ struct MemoryChartView: View {
                 .frame(height: chartHeight)
 
                 // R/W
-                HStack(spacing: expanded ? 16 : 8) {
+                HStack(spacing: expanded ? 16 : 6) {
                     HStack(spacing: 2) {
-                        Text("Read:")
-                            .font(.system(size: expanded ? 9 : 8))
+                        Text("R:")
+                            .font(.system(size: 8))
                             .foregroundStyle(.green.opacity(0.7))
                         Text(Formatters.speed(metrics.readBytesPerSec))
-                            .font(.system(size: expanded ? 10 : 9, weight: .medium, design: .rounded))
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
                             .foregroundStyle(.green)
                     }
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                     HStack(spacing: 2) {
-                        Text("Write:")
-                            .font(.system(size: expanded ? 9 : 8))
+                        Text("W:")
+                            .font(.system(size: 8))
                             .foregroundStyle(.orange.opacity(0.7))
                         Text(Formatters.speed(metrics.writeBytesPerSec))
-                            .font(.system(size: expanded ? 10 : 9, weight: .medium, design: .rounded))
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
                             .foregroundStyle(.orange)
                     }
-                    Spacer()
-                    Text("Pressure: \(Formatters.percentage(metrics.pressure))")
-                        .font(.system(size: expanded ? 10 : 9, weight: .semibold, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    Spacer(minLength: 0)
+                    Text(Formatters.percentage(metrics.pressure))
+                        .font(.system(size: 9, weight: .semibold, design: .rounded))
                         .foregroundStyle(AppTheme.Colors.usageColor(metrics.pressure))
+                        .lineLimit(1)
                 }
+                .frame(height: 14)
             }
         }
     }
