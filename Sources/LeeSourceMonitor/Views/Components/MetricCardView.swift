@@ -4,20 +4,30 @@ struct MetricCardView<Content: View>: View {
     let title: String
     let icon: String
     let accentColor: Color
+    var valueText: String? = nil
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(accentColor)
 
                 Text(title)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
 
-                Spacer()
+                if let valueText {
+                    Spacer()
+                    Text(valueText)
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundStyle(accentColor)
+                }
+
+                if valueText == nil {
+                    Spacer()
+                }
             }
 
             content()

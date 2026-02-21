@@ -9,31 +9,29 @@ struct NetworkChartView: View {
 
     var body: some View {
         MetricCardView(title: "Network", icon: "network", accentColor: AppTheme.Colors.networkIn) {
-            VStack(spacing: compact ? 6 : 12) {
-                // Current speed
-                HStack(spacing: 14) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "arrow.down.circle.fill")
-                            .font(.system(size: 11))
+            VStack(spacing: 4) {
+                // Speed inline
+                HStack(spacing: 10) {
+                    HStack(spacing: 3) {
+                        Text("↓")
+                            .font(.system(size: 10, weight: .bold))
                             .foregroundStyle(AppTheme.Colors.networkIn)
                         Text(Formatters.speed(metrics.speedIn))
-                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
                             .foregroundStyle(AppTheme.Colors.networkIn)
                     }
-
-                    HStack(spacing: 4) {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .font(.system(size: 11))
+                    HStack(spacing: 3) {
+                        Text("↑")
+                            .font(.system(size: 10, weight: .bold))
                             .foregroundStyle(AppTheme.Colors.networkOut)
                         Text(Formatters.speed(metrics.speedOut))
-                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
                             .foregroundStyle(AppTheme.Colors.networkOut)
                     }
-
                     Spacer()
                 }
 
-                // History chart
+                // Chart
                 if !inHistory.isEmpty || !outHistory.isEmpty {
                     Chart {
                         ForEach(inHistory) { sample in
@@ -43,7 +41,7 @@ struct NetworkChartView: View {
                             )
                             .foregroundStyle(
                                 LinearGradient(
-                                    colors: [AppTheme.Colors.networkIn.opacity(0.25), AppTheme.Colors.networkIn.opacity(0.02)],
+                                    colors: [AppTheme.Colors.networkIn.opacity(0.2), .clear],
                                     startPoint: .top,
                                     endPoint: .bottom
                                 )
@@ -70,33 +68,19 @@ struct NetworkChartView: View {
                         }
                     }
                     .chartXAxis(.hidden)
-                    .chartYAxis {
-                        AxisMarks(position: .leading) { _ in
-                            AxisValueLabel()
-                                .font(.system(size: 7))
-                                .foregroundStyle(AppTheme.Colors.textTertiary)
-                        }
-                    }
+                    .chartYAxis(.hidden)
                     .frame(height: AppTheme.Dimensions.chartHeight)
                 }
 
-                // Total transferred
+                // Totals
                 HStack {
-                    HStack(spacing: 3) {
-                        Text("↓")
-                            .font(.system(size: 9))
-                            .foregroundStyle(AppTheme.Colors.networkIn)
-                        Text(Formatters.bytes(metrics.bytesIn))
-                            .font(.system(size: 9, weight: .medium, design: .rounded))
-                    }
+                    Text("↓\(Formatters.bytes(metrics.bytesIn))")
+                        .font(.system(size: 8, design: .rounded))
+                        .foregroundStyle(AppTheme.Colors.textTertiary)
                     Spacer()
-                    HStack(spacing: 3) {
-                        Text("↑")
-                            .font(.system(size: 9))
-                            .foregroundStyle(AppTheme.Colors.networkOut)
-                        Text(Formatters.bytes(metrics.bytesOut))
-                            .font(.system(size: 9, weight: .medium, design: .rounded))
-                    }
+                    Text("↑\(Formatters.bytes(metrics.bytesOut))")
+                        .font(.system(size: 8, design: .rounded))
+                        .foregroundStyle(AppTheme.Colors.textTertiary)
                 }
             }
         }

@@ -8,6 +8,9 @@ let package = Package(
         .executableTarget(
             name: "LeeSourceMonitor",
             path: "Sources/LeeSourceMonitor",
+            resources: [
+                .copy("Resources"),
+            ],
             linkerSettings: [
                 .linkedFramework("IOKit"),
                 .linkedFramework("CoreFoundation"),

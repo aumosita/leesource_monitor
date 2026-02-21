@@ -6,26 +6,23 @@ struct NPUView: View {
     let history: [MetricSample]
 
     var body: some View {
-        MetricCardView(title: "Neural Engine", icon: "brain", accentColor: AppTheme.Colors.npuActive) {
-            VStack(spacing: 12) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text(Formatters.milliwatts(metrics.powerMilliwatts))
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
-                        .foregroundStyle(AppTheme.Colors.npuActive)
-
-                    HStack(spacing: 4) {
-                        Circle()
-                            .fill(metrics.isActive ? Color.green : Color.gray.opacity(0.4))
-                            .frame(width: 6, height: 6)
-                        Text(metrics.isActive ? "Active" : "Idle")
-                            .font(.system(size: 11))
-                            .foregroundStyle(AppTheme.Colors.textSecondary)
-                    }
-
+        MetricCardView(
+            title: "Neural Engine",
+            icon: "brain",
+            accentColor: AppTheme.Colors.npuActive,
+            valueText: Formatters.milliwatts(metrics.powerMilliwatts)
+        ) {
+            VStack(spacing: 4) {
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(metrics.isActive ? Color.green : Color.gray.opacity(0.4))
+                        .frame(width: 5, height: 5)
+                    Text(metrics.isActive ? "Active" : "Idle")
+                        .font(.system(size: 9))
+                        .foregroundStyle(AppTheme.Colors.textTertiary)
                     Spacer()
                 }
 
-                // Power history chart
                 if !history.isEmpty {
                     Chart(history) { sample in
                         AreaMark(
@@ -34,10 +31,7 @@ struct NPUView: View {
                         )
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [
-                                    AppTheme.Colors.npuActive.opacity(0.3),
-                                    AppTheme.Colors.npuActive.opacity(0.05),
-                                ],
+                                colors: [AppTheme.Colors.npuActive.opacity(0.2), .clear],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
@@ -50,17 +44,11 @@ struct NPUView: View {
                         )
                         .foregroundStyle(AppTheme.Colors.npuActive)
                         .interpolationMethod(.catmullRom)
-                        .lineStyle(StrokeStyle(lineWidth: 2))
+                        .lineStyle(StrokeStyle(lineWidth: 1.5))
                     }
                     .chartXAxis(.hidden)
-                    .chartYAxis {
-                        AxisMarks(position: .leading) { _ in
-                            AxisValueLabel()
-                                .font(.system(size: 8))
-                                .foregroundStyle(AppTheme.Colors.textTertiary)
-                        }
-                    }
-                    .frame(height: 80)
+                    .chartYAxis(.hidden)
+                    .frame(height: AppTheme.Dimensions.chartHeight)
                 }
             }
         }

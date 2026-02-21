@@ -31,7 +31,12 @@ struct LeeSourceMonitorApp: App {
 // Make the app show in Cmd+Tab when dashboard is open
 class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Start as regular app (shows in Dock and Cmd+Tab)
         NSApplication.shared.setActivationPolicy(.regular)
+
+        // Set app icon from bundled resource
+        if let iconURL = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
+           let iconImage = NSImage(contentsOf: iconURL) {
+            NSApplication.shared.applicationIconImage = iconImage
+        }
     }
 }

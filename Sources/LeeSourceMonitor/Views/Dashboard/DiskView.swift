@@ -1,84 +1,55 @@
 import SwiftUI
-import Charts
 
 struct DiskView: View {
     let metrics: DiskMetrics
 
     var body: some View {
-        MetricCardView(title: "Disk", icon: "internaldrive", accentColor: AppTheme.Colors.diskUsed) {
-            VStack(spacing: 12) {
+        MetricCardView(
+            title: "Disk",
+            icon: "internaldrive",
+            accentColor: AppTheme.Colors.diskUsed,
+            valueText: metrics.volumes.first.map { Formatters.percentage($0.usagePercent) }
+        ) {
+            VStack(spacing: 4) {
                 ForEach(metrics.volumes) { volume in
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
+                    HStack(spacing: 8) {
+                        // Mini donut
+                        ZStack {
+                            Circle()
+                                .stroke(AppTheme.Colors.diskFree, lineWidth: 4)
+                            Circle()
+                                .trim(from: 0, to: volume.usagePercent / 100)
+                                .stroke(
+                                    AppTheme.Colors.usageColor(volume.usagePercent),
+                                    style: StrokeStyle(lineWidth: 4, lineCap: .round)
+                                )
+                                .rotationEffect(.degrees(-90))
+                        }
+                        .frame(width: 30, height: 30)
+
+                        VStack(alignment: .leading, spacing: 1) {
                             Text(volume.name)
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundStyle(AppTheme.Colors.textPrimary)
-
-                            Spacer()
-
-                            Text(Formatters.percentage(volume.usagePercent))
-                                .font(.system(size: 12, weight: .semibold, design: .rounded))
-                                .foregroundStyle(AppTheme.Colors.usageColor(volume.usagePercent))
+                                .font(.system(size: 10, weight: .medium))
+                                .lineLimit(1)
+                            Text("\(Formatters.gigabytes(volume.usedGB)) / \(Formatters.gigabytes(volume.totalGB))")
+                                .font(.system(size: 9, design: .rounded))
+                                .foregroundStyle(AppTheme.Colors.textTertiary)
                         }
 
-                        // Donut chart
-                        HStack(spacing: 16) {
-                            ZStack {
-                                Circle()
-                                    .stroke(AppTheme.Colors.diskFree, lineWidth: 8)
+                        Spacer()
 
-                                Circle()
-                                    .trim(from: 0, to: volume.usagePercent / 100)
-                                    .stroke(
-                                        AppTheme.Colors.usageColor(volume.usagePercent),
-                                        style: StrokeStyle(lineWidth: 8, lineCap: .round)
-                                    )
-                                    .rotationEffect(.degrees(-90))
-
-                                VStack(spacing: 1) {
-                                    Text(Formatters.gigabytes(volume.usedGB))
-                                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                                    Text("used")
-                                        .font(.system(size: 8))
-                                        .foregroundStyle(AppTheme.Colors.textTertiary)
-                                }
-                            }
-                            .frame(width: 70, height: 70)
-
-                            VStack(alignment: .leading, spacing: 6) {
-                                DiskInfoRow(label: "Total", value: Formatters.gigabytes(volume.totalGB))
-                                DiskInfoRow(label: "Used", value: Formatters.gigabytes(volume.usedGB))
-                                DiskInfoRow(label: "Free", value: Formatters.gigabytes(volume.freeGB))
-                            }
-
-                            Spacer()
-                        }
+                        Text("\(Formatters.gigabytes(volume.freeGB)) free")
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
+                            .foregroundStyle(AppTheme.Colors.textSecondary)
                     }
                 }
 
                 if metrics.volumes.isEmpty {
-                    Text("No volumes found")
-                        .font(.system(size: 12))
+                    Text("No volumes")
+                        .font(.system(size: 10))
                         .foregroundStyle(AppTheme.Colors.textTertiary)
                 }
             }
-        }
-    }
-}
-
-private struct DiskInfoRow: View {
-    let label: String
-    let value: String
-
-    var body: some View {
-        HStack(spacing: 4) {
-            Text(label)
-                .font(.system(size: 10))
-                .foregroundStyle(AppTheme.Colors.textTertiary)
-                .frame(width: 32, alignment: .leading)
-            Text(value)
-                .font(.system(size: 11, weight: .medium, design: .rounded))
-                .foregroundStyle(AppTheme.Colors.textPrimary)
         }
     }
 }

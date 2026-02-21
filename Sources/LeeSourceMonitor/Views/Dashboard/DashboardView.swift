@@ -5,14 +5,13 @@ struct DashboardView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let isWide = geometry.size.width > 900
-            let columns = isWide ? 3 : 2
+            let w = geometry.size.width
+            let columns: Int = w > 1100 ? 4 : w > 750 ? 3 : w > 500 ? 2 : 1
+            let gridItems = Array(repeating: GridItem(.flexible(), spacing: AppTheme.Dimensions.gridSpacing), count: columns)
+            let tempColumns = columns >= 2 ? 2 : 1
 
             ScrollView {
-                let gridItems = Array(repeating: GridItem(.flexible(), spacing: AppTheme.Dimensions.gridSpacing), count: columns)
-
                 LazyVGrid(columns: gridItems, spacing: AppTheme.Dimensions.gridSpacing) {
-                    // CPU
                     CPUChartView(
                         metrics: monitor.cpu,
                         history: monitor.cpuHistory,
@@ -20,7 +19,6 @@ struct DashboardView: View {
                         compact: true
                     )
 
-                    // Memory
                     MemoryChartView(
                         metrics: monitor.memory,
                         pressureHistory: monitor.memoryPressureHistory,
@@ -29,14 +27,12 @@ struct DashboardView: View {
                         compact: true
                     )
 
-                    // GPU
                     GPUChartView(
                         metrics: monitor.gpu,
                         history: monitor.gpuHistory,
                         compact: true
                     )
 
-                    // Network
                     NetworkChartView(
                         metrics: monitor.network,
                         inHistory: monitor.networkInHistory,
@@ -44,21 +40,19 @@ struct DashboardView: View {
                         compact: true
                     )
 
-                    // Disk
                     DiskView(metrics: monitor.disk)
 
-                    // NPU
                     NPUView(
                         metrics: monitor.npu,
                         history: monitor.npuHistory
                     )
 
-                    // Temperature (spans full width)
+                    // Temperature spans 2 cols when possible
                     TemperatureView(
                         metrics: monitor.temperature,
                         history: monitor.temperatureHistory
                     )
-                    .gridCellColumns(columns)
+                    .gridCellColumns(tempColumns)
                 }
                 .padding(AppTheme.Dimensions.gridSpacing)
             }
