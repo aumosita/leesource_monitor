@@ -31,45 +31,58 @@ struct NetworkChartView: View {
                     Spacer()
                 }
 
-                // Chart
-                if !inHistory.isEmpty || !outHistory.isEmpty {
-                    Chart {
-                        ForEach(inHistory) { sample in
-                            AreaMark(
+                // Download bar chart (grows downward visually but positive values)
+                if !inHistory.isEmpty {
+                    HStack(spacing: 0) {
+                        Text("↓")
+                            .font(.system(size: 7, weight: .bold))
+                            .foregroundStyle(AppTheme.Colors.networkIn.opacity(0.5))
+                            .frame(width: 10)
+
+                        Chart(inHistory) { sample in
+                            BarMark(
                                 x: .value("Time", sample.timestamp),
                                 y: .value("Speed", sample.value)
                             )
                             .foregroundStyle(
                                 LinearGradient(
-                                    colors: [AppTheme.Colors.networkIn.opacity(0.2), .clear],
+                                    colors: [AppTheme.Colors.networkIn, AppTheme.Colors.networkIn.opacity(0.5)],
                                     startPoint: .top,
                                     endPoint: .bottom
                                 )
                             )
-                            .interpolationMethod(.catmullRom)
-
-                            LineMark(
-                                x: .value("Time", sample.timestamp),
-                                y: .value("Speed", sample.value)
-                            )
-                            .foregroundStyle(AppTheme.Colors.networkIn)
-                            .interpolationMethod(.catmullRom)
-                            .lineStyle(StrokeStyle(lineWidth: 1.5))
                         }
-
-                        ForEach(outHistory) { sample in
-                            LineMark(
-                                x: .value("Time", sample.timestamp),
-                                y: .value("Speed", sample.value)
-                            )
-                            .foregroundStyle(AppTheme.Colors.networkOut)
-                            .interpolationMethod(.catmullRom)
-                            .lineStyle(StrokeStyle(lineWidth: 1.5))
-                        }
+                        .chartXAxis(.hidden)
+                        .chartYAxis(.hidden)
                     }
-                    .chartXAxis(.hidden)
-                    .chartYAxis(.hidden)
-                    .frame(height: AppTheme.Dimensions.chartHeight)
+                    .frame(height: AppTheme.Dimensions.chartHeight / 2)
+                }
+
+                // Upload bar chart
+                if !outHistory.isEmpty {
+                    HStack(spacing: 0) {
+                        Text("↑")
+                            .font(.system(size: 7, weight: .bold))
+                            .foregroundStyle(AppTheme.Colors.networkOut.opacity(0.5))
+                            .frame(width: 10)
+
+                        Chart(outHistory) { sample in
+                            BarMark(
+                                x: .value("Time", sample.timestamp),
+                                y: .value("Speed", sample.value)
+                            )
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [AppTheme.Colors.networkOut, AppTheme.Colors.networkOut.opacity(0.5)],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                        }
+                        .chartXAxis(.hidden)
+                        .chartYAxis(.hidden)
+                    }
+                    .frame(height: AppTheme.Dimensions.chartHeight / 2)
                 }
 
                 // Totals
