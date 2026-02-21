@@ -35,6 +35,7 @@ struct DashboardView: View {
         .background(AppTheme.Colors.background)
         .onAppear {
             monitor.startMonitoring()
+            settings.applyWindowLevel()
         }
     }
 

@@ -37,6 +37,16 @@ struct SettingsView: View {
                 .padding(.vertical, 4)
             }
 
+            // Always on top
+            GroupBox("Window") {
+                Toggle("Always on Top", isOn: Binding(
+                    get: { settings.alwaysOnTop },
+                    set: { settings.alwaysOnTop = $0 }
+                ))
+                .font(.system(size: 12))
+                .padding(.vertical, 4)
+            }
+
             // Card visibility & order
             GroupBox("Dashboard Cards (drag to reorder)") {
                 List {

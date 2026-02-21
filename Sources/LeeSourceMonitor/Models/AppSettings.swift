@@ -13,6 +13,20 @@ final class AppSettings {
         }
     }
 
+    // Always on top
+    var alwaysOnTop: Bool {
+        didSet {
+            UserDefaults.standard.set(alwaysOnTop, forKey: "alwaysOnTop")
+            applyWindowLevel()
+        }
+    }
+
+    func applyWindowLevel() {
+        for window in NSApplication.shared.windows where window.title == "LeeSource Monitor" {
+            window.level = alwaysOnTop ? .floating : .normal
+        }
+    }
+
     // Dashboard card order
     var cardOrder: [CardType] {
         didSet {
@@ -60,6 +74,7 @@ final class AppSettings {
     private init() {
         let savedInterval = UserDefaults.standard.double(forKey: "pollingInterval")
         self.pollingInterval = savedInterval > 0 ? savedInterval : 1.0
+        self.alwaysOnTop = UserDefaults.standard.bool(forKey: "alwaysOnTop")
 
         if let savedHidden = UserDefaults.standard.stringArray(forKey: "hiddenCards") {
             self.hiddenCards = Set(savedHidden)
