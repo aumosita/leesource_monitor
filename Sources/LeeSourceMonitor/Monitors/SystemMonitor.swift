@@ -42,6 +42,7 @@ final class SystemMonitor {
     private var networkSnapshot: NetworkMonitor.NetworkSnapshot?
     private var timer: Timer?
     private var isRunning = false
+    private var currentInterval: Double = 1.0
 
     func startMonitoring() {
         guard !isRunning else { return }
@@ -51,9 +52,21 @@ final class SystemMonitor {
         update()
 
         // Periodic updates
-        timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
+        timer = Timer.scheduledTimer(withTimeInterval: currentInterval, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 self?.update()
+            }
+        }
+    }
+
+    func restartWithInterval(_ interval: Double) {
+        currentInterval = interval
+        if isRunning {
+            timer?.invalidate()
+            timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+                Task { @MainActor in
+                    self?.update()
+                }
             }
         }
     }

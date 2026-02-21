@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct LeeSourceMonitorApp: App {
     @State private var monitor = SystemMonitor()
+    @State private var settings = AppSettings.shared
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
@@ -20,20 +21,23 @@ struct LeeSourceMonitorApp: App {
 
         // Main window
         Window("LeeSource Monitor", id: "dashboard") {
-            DashboardView(monitor: monitor)
-                .frame(minWidth: 300, minHeight: 400)
+            DashboardView(monitor: monitor, settings: settings)
+                .frame(minWidth: 250, minHeight: 300)
         }
         .defaultSize(width: 900, height: 650)
         .keyboardShortcut("d", modifiers: .command)
+
+        // Settings
+        Settings {
+            SettingsView(settings: settings, monitor: monitor)
+        }
     }
 }
 
-// Make the app show in Cmd+Tab when dashboard is open
 class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApplication.shared.setActivationPolicy(.regular)
 
-        // Set app icon from bundled resource
         if let iconURL = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
            let iconImage = NSImage(contentsOf: iconURL) {
             NSApplication.shared.applicationIconImage = iconImage
