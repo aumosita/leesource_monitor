@@ -51,7 +51,7 @@ final class SystemMonitor {
         update()
 
         // Periodic updates
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 self?.update()
             }

@@ -25,25 +25,11 @@ struct NPUView: View {
 
                 if !history.isEmpty {
                     Chart(history) { sample in
-                        AreaMark(
-                            x: .value("Time", sample.timestamp),
-                            y: .value("Power", sample.value)
-                        )
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [AppTheme.Colors.npuActive.opacity(0.2), .clear],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .interpolationMethod(.catmullRom)
-
                         LineMark(
                             x: .value("Time", sample.timestamp),
                             y: .value("Power", sample.value)
                         )
                         .foregroundStyle(AppTheme.Colors.npuActive)
-                        .interpolationMethod(.catmullRom)
                         .lineStyle(StrokeStyle(lineWidth: 1.5))
                     }
                     .chartXAxis(.hidden)

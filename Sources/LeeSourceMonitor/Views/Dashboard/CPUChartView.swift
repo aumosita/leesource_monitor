@@ -15,7 +15,6 @@ struct CPUChartView: View {
             valueText: Formatters.percentage(metrics.totalUsage)
         ) {
             VStack(spacing: 4) {
-                // History chart
                 if !history.isEmpty {
                     Chart(history) { sample in
                         LineMark(
@@ -23,21 +22,7 @@ struct CPUChartView: View {
                             y: .value("Usage", sample.value)
                         )
                         .foregroundStyle(AppTheme.Colors.cpuGradientStart)
-                        .interpolationMethod(.catmullRom)
                         .lineStyle(StrokeStyle(lineWidth: 1.5))
-
-                        AreaMark(
-                            x: .value("Time", sample.timestamp),
-                            y: .value("Usage", sample.value)
-                        )
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [AppTheme.Colors.cpuGradientStart.opacity(0.2), .clear],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .interpolationMethod(.catmullRom)
                     }
                     .chartYScale(domain: 0...100)
                     .chartYAxis(.hidden)
@@ -45,7 +30,6 @@ struct CPUChartView: View {
                     .frame(height: AppTheme.Dimensions.chartHeight)
                 }
 
-                // Per-core bars
                 if !metrics.coreUsages.isEmpty {
                     HStack(spacing: 2) {
                         ForEach(0..<metrics.coreUsages.count, id: \.self) { i in

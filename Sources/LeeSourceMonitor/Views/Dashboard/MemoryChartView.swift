@@ -19,31 +19,26 @@ struct MemoryChartView: View {
             valueText: "\(String(format: "%.1f", usedGB))/\(String(format: "%.0f", totalGB))GB"
         ) {
             VStack(spacing: 4) {
-                // Memory breakdown bar
+                // Breakdown bar
                 GeometryReader { geometry in
                     let w = geometry.size.width
                     let total = max(Double(metrics.totalBytes), 1)
-                    let activeW = w * Double(metrics.activeBytes) / total
-                    let wiredW = w * Double(metrics.wiredBytes) / total
-                    let compressedW = w * Double(metrics.compressedBytes) / total
-                    let inactiveW = w * Double(metrics.inactiveBytes) / total
 
                     HStack(spacing: 1) {
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(Color(hue: 0.55, saturation: 0.7, brightness: 0.85))
-                            .frame(width: max(activeW, 0))
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(Color(hue: 0.08, saturation: 0.7, brightness: 0.85))
-                            .frame(width: max(wiredW, 0))
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(Color(hue: 0.75, saturation: 0.5, brightness: 0.85))
-                            .frame(width: max(compressedW, 0))
-                        RoundedRectangle(cornerRadius: 2)
+                        Rectangle()
+                            .fill(Color.cyan)
+                            .frame(width: max(w * Double(metrics.activeBytes) / total, 0))
+                        Rectangle()
+                            .fill(Color.orange)
+                            .frame(width: max(w * Double(metrics.wiredBytes) / total, 0))
+                        Rectangle()
+                            .fill(Color.purple)
+                            .frame(width: max(w * Double(metrics.compressedBytes) / total, 0))
+                        Rectangle()
                             .fill(Color.gray.opacity(0.3))
-                            .frame(width: max(inactiveW, 0))
+                            .frame(width: max(w * Double(metrics.inactiveBytes) / total, 0))
                         Spacer(minLength: 0)
                     }
-                    .clipShape(Capsule())
                 }
                 .frame(height: 5)
 
@@ -55,21 +50,7 @@ struct MemoryChartView: View {
                             y: .value("Pressure", sample.value)
                         )
                         .foregroundStyle(.cyan)
-                        .interpolationMethod(.catmullRom)
                         .lineStyle(StrokeStyle(lineWidth: 1.5))
-
-                        AreaMark(
-                            x: .value("Time", sample.timestamp),
-                            y: .value("Pressure", sample.value)
-                        )
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [Color.cyan.opacity(0.2), .clear],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .interpolationMethod(.catmullRom)
                     }
                     .chartYScale(domain: 0...100)
                     .chartYAxis(.hidden)
@@ -77,7 +58,7 @@ struct MemoryChartView: View {
                     .frame(height: AppTheme.Dimensions.chartHeight)
                 }
 
-                // R/W inline
+                // R/W
                 HStack(spacing: 8) {
                     HStack(spacing: 2) {
                         Text("R:")

@@ -10,7 +10,6 @@ struct NetworkChartView: View {
     var body: some View {
         MetricCardView(title: "Network", icon: "network", accentColor: AppTheme.Colors.networkIn) {
             VStack(spacing: 4) {
-                // Speed inline
                 HStack(spacing: 10) {
                     HStack(spacing: 3) {
                         Text("↓")
@@ -31,61 +30,34 @@ struct NetworkChartView: View {
                     Spacer()
                 }
 
-                // Download bar chart (grows downward visually but positive values)
+                // Download bars
                 if !inHistory.isEmpty {
-                    HStack(spacing: 0) {
-                        Text("↓")
-                            .font(.system(size: 7, weight: .bold))
-                            .foregroundStyle(AppTheme.Colors.networkIn.opacity(0.5))
-                            .frame(width: 10)
-
-                        Chart(inHistory) { sample in
-                            BarMark(
-                                x: .value("Time", sample.timestamp),
-                                y: .value("Speed", sample.value)
-                            )
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [AppTheme.Colors.networkIn, AppTheme.Colors.networkIn.opacity(0.5)],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
-                        }
-                        .chartXAxis(.hidden)
-                        .chartYAxis(.hidden)
+                    Chart(inHistory) { sample in
+                        BarMark(
+                            x: .value("Time", sample.timestamp),
+                            y: .value("Speed", sample.value)
+                        )
+                        .foregroundStyle(AppTheme.Colors.networkIn)
                     }
+                    .chartXAxis(.hidden)
+                    .chartYAxis(.hidden)
                     .frame(height: AppTheme.Dimensions.chartHeight / 2)
                 }
 
-                // Upload bar chart
+                // Upload bars
                 if !outHistory.isEmpty {
-                    HStack(spacing: 0) {
-                        Text("↑")
-                            .font(.system(size: 7, weight: .bold))
-                            .foregroundStyle(AppTheme.Colors.networkOut.opacity(0.5))
-                            .frame(width: 10)
-
-                        Chart(outHistory) { sample in
-                            BarMark(
-                                x: .value("Time", sample.timestamp),
-                                y: .value("Speed", sample.value)
-                            )
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [AppTheme.Colors.networkOut, AppTheme.Colors.networkOut.opacity(0.5)],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
-                        }
-                        .chartXAxis(.hidden)
-                        .chartYAxis(.hidden)
+                    Chart(outHistory) { sample in
+                        BarMark(
+                            x: .value("Time", sample.timestamp),
+                            y: .value("Speed", sample.value)
+                        )
+                        .foregroundStyle(AppTheme.Colors.networkOut)
                     }
+                    .chartXAxis(.hidden)
+                    .chartYAxis(.hidden)
                     .frame(height: AppTheme.Dimensions.chartHeight / 2)
                 }
 
-                // Totals
                 HStack {
                     Text("↓\(Formatters.bytes(metrics.bytesIn))")
                         .font(.system(size: 8, design: .rounded))

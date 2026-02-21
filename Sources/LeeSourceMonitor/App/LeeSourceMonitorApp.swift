@@ -21,7 +21,7 @@ struct LeeSourceMonitorApp: App {
         // Main window
         Window("LeeSource Monitor", id: "dashboard") {
             DashboardView(monitor: monitor)
-                .frame(minWidth: 600, minHeight: 400)
+                .frame(minWidth: 300, minHeight: 400)
         }
         .defaultSize(width: 900, height: 650)
         .keyboardShortcut("d", modifiers: .command)
