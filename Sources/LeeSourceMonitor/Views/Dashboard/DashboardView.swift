@@ -33,6 +33,7 @@ struct DashboardView: View {
                     ) {
                         ForEach(settings.visibleCards) { card in
                             cardView(for: card, expanded: isExpanded)
+                                .frame(minHeight: isExpanded ? 260 : nil, alignment: .top)
                         }
                     }
                     .padding(padding)
