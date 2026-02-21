@@ -5,33 +5,36 @@ struct NetworkChartView: View {
     let metrics: NetworkMetrics
     let inHistory: [MetricSample]
     let outHistory: [MetricSample]
+    var compact: Bool = false
 
     var body: some View {
         MetricCardView(title: "Network", icon: "network", accentColor: AppTheme.Colors.networkIn) {
-            VStack(spacing: 12) {
+            VStack(spacing: compact ? 6 : 12) {
                 // Current speed
-                HStack(spacing: 20) {
-                    SpeedIndicator(
-                        icon: "arrow.down.circle.fill",
-                        label: "Download",
-                        speed: Formatters.speed(metrics.speedIn),
-                        color: AppTheme.Colors.networkIn
-                    )
+                HStack(spacing: 14) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.down.circle.fill")
+                            .font(.system(size: 11))
+                            .foregroundStyle(AppTheme.Colors.networkIn)
+                        Text(Formatters.speed(metrics.speedIn))
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                            .foregroundStyle(AppTheme.Colors.networkIn)
+                    }
 
-                    SpeedIndicator(
-                        icon: "arrow.up.circle.fill",
-                        label: "Upload",
-                        speed: Formatters.speed(metrics.speedOut),
-                        color: AppTheme.Colors.networkOut
-                    )
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.up.circle.fill")
+                            .font(.system(size: 11))
+                            .foregroundStyle(AppTheme.Colors.networkOut)
+                        Text(Formatters.speed(metrics.speedOut))
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                            .foregroundStyle(AppTheme.Colors.networkOut)
+                    }
 
                     Spacer()
                 }
 
                 // History chart
-                let combinedHistory = inHistory.map { ($0, "Download") } + outHistory.map { ($0, "Upload") }
-
-                if !combinedHistory.isEmpty {
+                if !inHistory.isEmpty || !outHistory.isEmpty {
                     Chart {
                         ForEach(inHistory) { sample in
                             AreaMark(
@@ -40,7 +43,7 @@ struct NetworkChartView: View {
                             )
                             .foregroundStyle(
                                 LinearGradient(
-                                    colors: [AppTheme.Colors.networkIn.opacity(0.3), AppTheme.Colors.networkIn.opacity(0.05)],
+                                    colors: [AppTheme.Colors.networkIn.opacity(0.25), AppTheme.Colors.networkIn.opacity(0.02)],
                                     startPoint: .top,
                                     endPoint: .bottom
                                 )
@@ -57,19 +60,6 @@ struct NetworkChartView: View {
                         }
 
                         ForEach(outHistory) { sample in
-                            AreaMark(
-                                x: .value("Time", sample.timestamp),
-                                y: .value("Speed", sample.value)
-                            )
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [AppTheme.Colors.networkOut.opacity(0.3), AppTheme.Colors.networkOut.opacity(0.05)],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
-                            .interpolationMethod(.catmullRom)
-
                             LineMark(
                                 x: .value("Time", sample.timestamp),
                                 y: .value("Speed", sample.value)
@@ -83,7 +73,7 @@ struct NetworkChartView: View {
                     .chartYAxis {
                         AxisMarks(position: .leading) { _ in
                             AxisValueLabel()
-                                .font(.system(size: 8))
+                                .font(.system(size: 7))
                                 .foregroundStyle(AppTheme.Colors.textTertiary)
                         }
                     }
@@ -92,46 +82,22 @@ struct NetworkChartView: View {
 
                 // Total transferred
                 HStack {
-                    HStack(spacing: 4) {
-                        Text("Total ↓")
-                            .font(.system(size: 10))
-                            .foregroundStyle(AppTheme.Colors.textTertiary)
+                    HStack(spacing: 3) {
+                        Text("↓")
+                            .font(.system(size: 9))
+                            .foregroundStyle(AppTheme.Colors.networkIn)
                         Text(Formatters.bytes(metrics.bytesIn))
-                            .font(.system(size: 10, weight: .medium, design: .rounded))
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
                     }
                     Spacer()
-                    HStack(spacing: 4) {
-                        Text("Total ↑")
-                            .font(.system(size: 10))
-                            .foregroundStyle(AppTheme.Colors.textTertiary)
+                    HStack(spacing: 3) {
+                        Text("↑")
+                            .font(.system(size: 9))
+                            .foregroundStyle(AppTheme.Colors.networkOut)
                         Text(Formatters.bytes(metrics.bytesOut))
-                            .font(.system(size: 10, weight: .medium, design: .rounded))
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
                     }
                 }
-            }
-        }
-    }
-}
-
-private struct SpeedIndicator: View {
-    let icon: String
-    let label: String
-    let speed: String
-    let color: Color
-
-    var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.system(size: 14))
-                .foregroundStyle(color)
-
-            VStack(alignment: .leading, spacing: 1) {
-                Text(label)
-                    .font(.system(size: 9))
-                    .foregroundStyle(AppTheme.Colors.textTertiary)
-                Text(speed)
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
-                    .foregroundStyle(color)
             }
         }
     }

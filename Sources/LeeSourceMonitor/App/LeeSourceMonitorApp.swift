@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct LeeSourceMonitorApp: App {
     @State private var monitor = SystemMonitor()
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
         // Menu bar
@@ -20,9 +21,17 @@ struct LeeSourceMonitorApp: App {
         // Main window
         Window("LeeSource Monitor", id: "dashboard") {
             DashboardView(monitor: monitor)
-                .frame(minWidth: 800, idealWidth: 1000, minHeight: 600, idealHeight: 800)
+                .frame(minWidth: 600, minHeight: 400)
         }
-        .defaultSize(width: 1000, height: 800)
+        .defaultSize(width: 900, height: 650)
         .keyboardShortcut("d", modifiers: .command)
+    }
+}
+
+// Make the app show in Cmd+Tab when dashboard is open
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // Start as regular app (shows in Dock and Cmd+Tab)
+        NSApplication.shared.setActivationPolicy(.regular)
     }
 }

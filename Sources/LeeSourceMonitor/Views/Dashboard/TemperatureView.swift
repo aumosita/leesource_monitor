@@ -7,8 +7,8 @@ struct TemperatureView: View {
 
     var body: some View {
         MetricCardView(title: "Temperature", icon: "thermometer.medium", accentColor: .orange) {
-            VStack(spacing: 12) {
-                // Overlapping line chart for all sensors
+            VStack(spacing: 6) {
+                // Overlapping line chart
                 if !history.isEmpty {
                     let sortedSensors = metrics.sensors.sorted { $0.name < $1.name }
                     Chart {
@@ -22,7 +22,7 @@ struct TemperatureView: View {
                                 )
                                 .foregroundStyle(AppTheme.Colors.sensorColor(at: index))
                                 .interpolationMethod(.catmullRom)
-                                .lineStyle(StrokeStyle(lineWidth: 1.5))
+                                .lineStyle(StrokeStyle(lineWidth: 1.2))
                             }
                         }
                     }
@@ -30,7 +30,7 @@ struct TemperatureView: View {
                         AxisMarks(position: .leading) { value in
                             AxisValueLabel {
                                 Text("\(value.as(Int.self) ?? 0)°")
-                                    .font(.system(size: 9))
+                                    .font(.system(size: 8))
                                     .foregroundStyle(AppTheme.Colors.textTertiary)
                             }
                             AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
@@ -39,30 +39,31 @@ struct TemperatureView: View {
                     }
                     .chartXAxis(.hidden)
                     .chartLegend(.hidden)
-                    .frame(height: AppTheme.Dimensions.chartHeight + 30)
+                    .frame(height: 80)
                 }
 
-                // Legend - sensor list with current values
+                // Compact sensor legend - 3 columns
                 let sortedSensors = metrics.sensors.sorted { $0.name < $1.name }
                 LazyVGrid(columns: [
-                    GridItem(.flexible(), spacing: 8),
-                    GridItem(.flexible(), spacing: 8),
-                ], alignment: .leading, spacing: 4) {
+                    GridItem(.flexible(), spacing: 4),
+                    GridItem(.flexible(), spacing: 4),
+                    GridItem(.flexible(), spacing: 4),
+                ], alignment: .leading, spacing: 2) {
                     ForEach(Array(sortedSensors.enumerated()), id: \.element.id) { index, sensor in
-                        HStack(spacing: 6) {
+                        HStack(spacing: 3) {
                             Circle()
                                 .fill(AppTheme.Colors.sensorColor(at: index))
-                                .frame(width: 6, height: 6)
+                                .frame(width: 5, height: 5)
 
                             Text(sensor.name)
-                                .font(.system(size: 9))
+                                .font(.system(size: 7))
                                 .foregroundStyle(AppTheme.Colors.textSecondary)
                                 .lineLimit(1)
 
-                            Spacer()
+                            Spacer(minLength: 0)
 
                             Text(Formatters.temperature(sensor.temperature))
-                                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                                .font(.system(size: 8, weight: .semibold, design: .rounded))
                                 .foregroundStyle(temperatureColor(sensor.temperature))
                         }
                     }
@@ -72,12 +73,8 @@ struct TemperatureView: View {
     }
 
     private func temperatureColor(_ temp: Double) -> Color {
-        if temp < 40 {
-            return Color(hue: 0.35, saturation: 0.6, brightness: 0.8)  // Green
-        } else if temp < 70 {
-            return Color(hue: 0.12, saturation: 0.7, brightness: 0.9)  // Orange
-        } else {
-            return Color(hue: 0.0, saturation: 0.7, brightness: 0.9)   // Red
-        }
+        if temp < 40 { return Color(hue: 0.35, saturation: 0.6, brightness: 0.8) }
+        if temp < 70 { return Color(hue: 0.12, saturation: 0.7, brightness: 0.9) }
+        return Color(hue: 0.0, saturation: 0.7, brightness: 0.9)
     }
 }

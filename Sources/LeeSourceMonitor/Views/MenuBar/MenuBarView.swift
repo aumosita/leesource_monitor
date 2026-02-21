@@ -83,11 +83,13 @@ struct MenuBarView: View {
                     Divider()
                         .padding(.horizontal, 8)
 
-                    // Temperature (top sensors)
-                    let topSensors = Array(monitor.temperature.sensors.prefix(4))
+                    // Temperature (top 3 hottest sensors)
+                    let topSensors = monitor.temperature.sensors
+                        .sorted { $0.temperature > $1.temperature }
+                        .prefix(3)
                     if !topSensors.isEmpty {
                         VStack(spacing: 4) {
-                            ForEach(topSensors) { sensor in
+                            ForEach(Array(topSensors)) { sensor in
                                 HStack {
                                     Image(systemName: "thermometer.medium")
                                         .font(.system(size: 10))

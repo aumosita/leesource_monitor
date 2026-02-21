@@ -5,14 +5,15 @@ struct CPUChartView: View {
     let metrics: CPUMetrics
     let history: [MetricSample]
     let coreHistory: [[MetricSample]]
+    var compact: Bool = false
 
     var body: some View {
         MetricCardView(title: "CPU", icon: "cpu", accentColor: AppTheme.Colors.cpuGradientStart) {
-            VStack(spacing: 12) {
+            VStack(spacing: compact ? 6 : 12) {
                 // Total usage header
                 HStack(alignment: .firstTextBaseline) {
                     Text(Formatters.percentage(metrics.totalUsage))
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .font(.system(size: compact ? 20 : 28, weight: .bold, design: .rounded))
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [AppTheme.Colors.cpuGradientStart, AppTheme.Colors.cpuGradientEnd],
@@ -22,7 +23,7 @@ struct CPUChartView: View {
                         )
 
                     Text("\(metrics.coreCount) cores")
-                        .font(.system(size: 11))
+                        .font(.system(size: 10))
                         .foregroundStyle(AppTheme.Colors.textTertiary)
 
                     Spacer()
@@ -43,7 +44,7 @@ struct CPUChartView: View {
                             )
                         )
                         .interpolationMethod(.catmullRom)
-                        .lineStyle(StrokeStyle(lineWidth: 2))
+                        .lineStyle(StrokeStyle(lineWidth: 1.5))
 
                         AreaMark(
                             x: .value("Time", sample.timestamp),
@@ -52,8 +53,8 @@ struct CPUChartView: View {
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [
-                                    AppTheme.Colors.cpuGradientStart.opacity(0.3),
-                                    AppTheme.Colors.cpuGradientEnd.opacity(0.05),
+                                    AppTheme.Colors.cpuGradientStart.opacity(0.2),
+                                    AppTheme.Colors.cpuGradientEnd.opacity(0.02),
                                 ],
                                 startPoint: .top,
                                 endPoint: .bottom
@@ -66,7 +67,7 @@ struct CPUChartView: View {
                         AxisMarks(values: [0, 50, 100]) { value in
                             AxisValueLabel {
                                 Text("\(value.as(Int.self) ?? 0)%")
-                                    .font(.system(size: 9))
+                                    .font(.system(size: 8))
                                     .foregroundStyle(AppTheme.Colors.textTertiary)
                             }
                             AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
@@ -79,17 +80,17 @@ struct CPUChartView: View {
 
                 // Per-core bars
                 if !metrics.coreUsages.isEmpty {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: min(metrics.coreCount, 8)), spacing: 4) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: min(metrics.coreCount, 8)), spacing: 2) {
                         ForEach(0..<metrics.coreUsages.count, id: \.self) { i in
-                            VStack(spacing: 2) {
+                            VStack(spacing: 1) {
                                 UsageBar(
                                     value: metrics.coreUsages[i],
                                     maxValue: 100,
                                     color: AppTheme.Colors.usageColor(metrics.coreUsages[i]),
-                                    height: 4
+                                    height: 3
                                 )
                                 Text("\(i)")
-                                    .font(.system(size: 8, design: .monospaced))
+                                    .font(.system(size: 7, design: .monospaced))
                                     .foregroundStyle(AppTheme.Colors.textTertiary)
                             }
                         }

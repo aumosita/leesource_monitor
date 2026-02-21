@@ -6,6 +6,7 @@ struct MemoryChartView: View {
     let pressureHistory: [MetricSample]
     let readHistory: [MetricSample]
     let writeHistory: [MetricSample]
+    var compact: Bool = false
 
     private var totalGB: Double { Double(metrics.totalBytes) / 1_073_741_824 }
     private var usedGB: Double { Double(metrics.usedBytes) / 1_073_741_824 }
@@ -16,15 +17,15 @@ struct MemoryChartView: View {
 
     var body: some View {
         MetricCardView(title: "Memory", icon: "memorychip", accentColor: .cyan) {
-            VStack(spacing: 14) {
+            VStack(spacing: compact ? 6 : 12) {
                 // Usage summary
                 HStack(alignment: .firstTextBaseline) {
                     Text(Formatters.percentage(metrics.pressure))
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .font(.system(size: compact ? 20 : 28, weight: .bold, design: .rounded))
                         .foregroundStyle(AppTheme.Colors.usageColor(metrics.pressure))
 
-                    Text("\(String(format: "%.1f", usedGB)) / \(String(format: "%.1f", totalGB)) GB")
-                        .font(.system(size: 11))
+                    Text("\(String(format: "%.1f", usedGB)) / \(String(format: "%.0f", totalGB)) GB")
+                        .font(.system(size: 10))
                         .foregroundStyle(AppTheme.Colors.textTertiary)
 
                     Spacer()
@@ -41,56 +42,45 @@ struct MemoryChartView: View {
 
                     HStack(spacing: 1) {
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(Color(hue: 0.55, saturation: 0.7, brightness: 0.85))  // Active - cyan
+                            .fill(Color(hue: 0.55, saturation: 0.7, brightness: 0.85))
                             .frame(width: max(activeW, 0))
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(Color(hue: 0.08, saturation: 0.7, brightness: 0.85))  // Wired - orange
+                            .fill(Color(hue: 0.08, saturation: 0.7, brightness: 0.85))
                             .frame(width: max(wiredW, 0))
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(Color(hue: 0.75, saturation: 0.5, brightness: 0.85))  // Compressed - purple
+                            .fill(Color(hue: 0.75, saturation: 0.5, brightness: 0.85))
                             .frame(width: max(compressedW, 0))
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(Color.gray.opacity(0.3))  // Inactive
+                            .fill(Color.gray.opacity(0.3))
                             .frame(width: max(inactiveW, 0))
                         Spacer(minLength: 0)
                     }
                     .clipShape(Capsule())
                 }
-                .frame(height: 8)
+                .frame(height: 6)
 
-                // Legend
-                HStack(spacing: 12) {
+                // Legend (compact)
+                HStack(spacing: 8) {
                     MemoryLegend(color: Color(hue: 0.55, saturation: 0.7, brightness: 0.85),
-                                 label: "Active", value: String(format: "%.1f GB", activeGB))
+                                 label: "Act", value: String(format: "%.1f", activeGB))
                     MemoryLegend(color: Color(hue: 0.08, saturation: 0.7, brightness: 0.85),
-                                 label: "Wired", value: String(format: "%.1f GB", wiredGB))
+                                 label: "Wir", value: String(format: "%.1f", wiredGB))
                     MemoryLegend(color: Color(hue: 0.75, saturation: 0.5, brightness: 0.85),
-                                 label: "Compressed", value: String(format: "%.1f GB", compressedGB))
+                                 label: "Cmp", value: String(format: "%.1f", compressedGB))
                     MemoryLegend(color: Color.gray.opacity(0.4),
-                                 label: "Free", value: String(format: "%.1f GB", freeGB))
+                                 label: "Free", value: String(format: "%.1f", freeGB))
                 }
 
-                // Memory pressure history chart
+                // Pressure chart
                 if !pressureHistory.isEmpty {
-                    Text("Memory Pressure")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundStyle(AppTheme.Colors.textTertiary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
                     Chart(pressureHistory) { sample in
                         LineMark(
                             x: .value("Time", sample.timestamp),
                             y: .value("Pressure", sample.value)
                         )
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.cyan, .blue],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
+                        .foregroundStyle(.cyan)
                         .interpolationMethod(.catmullRom)
-                        .lineStyle(StrokeStyle(lineWidth: 2))
+                        .lineStyle(StrokeStyle(lineWidth: 1.5))
 
                         AreaMark(
                             x: .value("Time", sample.timestamp),
@@ -98,7 +88,7 @@ struct MemoryChartView: View {
                         )
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [Color.cyan.opacity(0.25), Color.blue.opacity(0.05)],
+                                colors: [Color.cyan.opacity(0.2), Color.cyan.opacity(0.02)],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
@@ -110,7 +100,7 @@ struct MemoryChartView: View {
                         AxisMarks(values: [0, 50, 100]) { value in
                             AxisValueLabel {
                                 Text("\(value.as(Int.self) ?? 0)%")
-                                    .font(.system(size: 9))
+                                    .font(.system(size: 8))
                                     .foregroundStyle(AppTheme.Colors.textTertiary)
                             }
                             AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
@@ -118,71 +108,30 @@ struct MemoryChartView: View {
                         }
                     }
                     .chartXAxis(.hidden)
-                    .frame(height: 80)
+                    .frame(height: compact ? 50 : 80)
                 }
 
-                // Read/Write activity
-                if !readHistory.isEmpty || !writeHistory.isEmpty {
-                    HStack(spacing: 16) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.down.doc.fill")
-                                .font(.system(size: 10))
-                                .foregroundStyle(.green)
-                            Text("Read")
-                                .font(.system(size: 9))
-                                .foregroundStyle(AppTheme.Colors.textTertiary)
-                            Text(Formatters.speed(metrics.readBytesPerSec))
-                                .font(.system(size: 10, weight: .semibold, design: .rounded))
-                                .foregroundStyle(.green)
-                        }
-
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.up.doc.fill")
-                                .font(.system(size: 10))
-                                .foregroundStyle(.orange)
-                            Text("Write")
-                                .font(.system(size: 9))
-                                .foregroundStyle(AppTheme.Colors.textTertiary)
-                            Text(Formatters.speed(metrics.writeBytesPerSec))
-                                .font(.system(size: 10, weight: .semibold, design: .rounded))
-                                .foregroundStyle(.orange)
-                        }
-
-                        Spacer()
-                    }
-
-                    Chart {
-                        ForEach(readHistory) { sample in
-                            LineMark(
-                                x: .value("Time", sample.timestamp),
-                                y: .value("Speed", sample.value),
-                                series: .value("Type", "Read")
-                            )
+                // Read/Write
+                HStack(spacing: 12) {
+                    HStack(spacing: 3) {
+                        Image(systemName: "arrow.down.doc.fill")
+                            .font(.system(size: 9))
                             .foregroundStyle(.green)
-                            .interpolationMethod(.catmullRom)
-                            .lineStyle(StrokeStyle(lineWidth: 1.5))
-                        }
+                        Text(Formatters.speed(metrics.readBytesPerSec))
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
+                            .foregroundStyle(.green)
+                    }
 
-                        ForEach(writeHistory) { sample in
-                            LineMark(
-                                x: .value("Time", sample.timestamp),
-                                y: .value("Speed", sample.value),
-                                series: .value("Type", "Write")
-                            )
+                    HStack(spacing: 3) {
+                        Image(systemName: "arrow.up.doc.fill")
+                            .font(.system(size: 9))
                             .foregroundStyle(.orange)
-                            .interpolationMethod(.catmullRom)
-                            .lineStyle(StrokeStyle(lineWidth: 1.5))
-                        }
+                        Text(Formatters.speed(metrics.writeBytesPerSec))
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
+                            .foregroundStyle(.orange)
                     }
-                    .chartXAxis(.hidden)
-                    .chartYAxis {
-                        AxisMarks(position: .leading) { _ in
-                            AxisValueLabel()
-                                .font(.system(size: 8))
-                                .foregroundStyle(AppTheme.Colors.textTertiary)
-                        }
-                    }
-                    .frame(height: 60)
+
+                    Spacer()
                 }
             }
         }
@@ -195,17 +144,13 @@ private struct MemoryLegend: View {
     let value: String
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 3) {
             Circle()
                 .fill(color)
-                .frame(width: 6, height: 6)
-            VStack(alignment: .leading, spacing: 0) {
-                Text(label)
-                    .font(.system(size: 8))
-                    .foregroundStyle(AppTheme.Colors.textTertiary)
-                Text(value)
-                    .font(.system(size: 9, weight: .medium, design: .rounded))
-            }
+                .frame(width: 5, height: 5)
+            Text("\(label) \(value)")
+                .font(.system(size: 8, weight: .medium, design: .rounded))
+                .foregroundStyle(AppTheme.Colors.textSecondary)
         }
     }
 }

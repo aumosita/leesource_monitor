@@ -4,15 +4,16 @@ import Charts
 struct GPUChartView: View {
     let metrics: GPUMetrics
     let history: [MetricSample]
+    var compact: Bool = false
 
     var body: some View {
         MetricCardView(title: "GPU", icon: "gpu", accentColor: AppTheme.Colors.gpuGradientStart) {
-            VStack(spacing: 12) {
+            VStack(spacing: compact ? 6 : 12) {
                 // Usage header
-                HStack(alignment: .firstTextBaseline, spacing: 12) {
-                    VStack(alignment: .leading, spacing: 2) {
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 1) {
                         Text(Formatters.percentage(metrics.deviceUtilization))
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .font(.system(size: compact ? 20 : 28, weight: .bold, design: .rounded))
                             .foregroundStyle(
                                 LinearGradient(
                                     colors: [AppTheme.Colors.gpuGradientStart, AppTheme.Colors.gpuGradientEnd],
@@ -20,27 +21,15 @@ struct GPUChartView: View {
                                     endPoint: .trailing
                                 )
                             )
-                        Text("Device")
-                            .font(.system(size: 9))
-                            .foregroundStyle(AppTheme.Colors.textTertiary)
                     }
 
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(Formatters.percentage(metrics.rendererUtilization))
-                            .font(.system(size: 16, weight: .semibold, design: .rounded))
-                            .foregroundStyle(AppTheme.Colors.gpuGradientStart.opacity(0.8))
-                        Text("Renderer")
-                            .font(.system(size: 9))
-                            .foregroundStyle(AppTheme.Colors.textTertiary)
-                    }
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(Formatters.percentage(metrics.tilerUtilization))
-                            .font(.system(size: 16, weight: .semibold, design: .rounded))
-                            .foregroundStyle(AppTheme.Colors.gpuGradientEnd.opacity(0.8))
-                        Text("Tiler")
-                            .font(.system(size: 9))
-                            .foregroundStyle(AppTheme.Colors.textTertiary)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("R: \(Formatters.percentage(metrics.rendererUtilization))")
+                            .font(.system(size: 10, design: .rounded))
+                            .foregroundStyle(AppTheme.Colors.gpuGradientStart.opacity(0.7))
+                        Text("T: \(Formatters.percentage(metrics.tilerUtilization))")
+                            .font(.system(size: 10, design: .rounded))
+                            .foregroundStyle(AppTheme.Colors.gpuGradientEnd.opacity(0.7))
                     }
 
                     Spacer()
@@ -61,7 +50,7 @@ struct GPUChartView: View {
                             )
                         )
                         .interpolationMethod(.catmullRom)
-                        .lineStyle(StrokeStyle(lineWidth: 2))
+                        .lineStyle(StrokeStyle(lineWidth: 1.5))
 
                         AreaMark(
                             x: .value("Time", sample.timestamp),
@@ -70,8 +59,8 @@ struct GPUChartView: View {
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [
-                                    AppTheme.Colors.gpuGradientStart.opacity(0.25),
-                                    AppTheme.Colors.gpuGradientEnd.opacity(0.05),
+                                    AppTheme.Colors.gpuGradientStart.opacity(0.2),
+                                    AppTheme.Colors.gpuGradientEnd.opacity(0.02),
                                 ],
                                 startPoint: .top,
                                 endPoint: .bottom
@@ -84,7 +73,7 @@ struct GPUChartView: View {
                         AxisMarks(values: [0, 50, 100]) { value in
                             AxisValueLabel {
                                 Text("\(value.as(Int.self) ?? 0)%")
-                                    .font(.system(size: 9))
+                                    .font(.system(size: 8))
                                     .foregroundStyle(AppTheme.Colors.textTertiary)
                             }
                             AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
@@ -97,21 +86,14 @@ struct GPUChartView: View {
 
                 // Memory info
                 HStack {
-                    HStack(spacing: 4) {
-                        Text("VRAM In Use")
-                            .font(.system(size: 10))
+                    HStack(spacing: 3) {
+                        Text("VRAM")
+                            .font(.system(size: 9))
                             .foregroundStyle(AppTheme.Colors.textTertiary)
                         Text(Formatters.bytes(metrics.inUseSystemMemory))
-                            .font(.system(size: 10, weight: .medium, design: .rounded))
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
                     }
                     Spacer()
-                    HStack(spacing: 4) {
-                        Text("Allocated")
-                            .font(.system(size: 10))
-                            .foregroundStyle(AppTheme.Colors.textTertiary)
-                        Text(Formatters.bytes(metrics.allocatedSystemMemory))
-                            .font(.system(size: 10, weight: .medium, design: .rounded))
-                    }
                 }
             }
         }
