@@ -11,10 +11,10 @@ struct DashboardView: View {
 
             ScrollView {
                 if isMicro {
-                    // Micro mode: single column, no charts
+                    // Micro mode: single column, full cards (charts visible), tight padding
                     VStack(spacing: 4) {
                         ForEach(settings.visibleCards) { card in
-                            microCardView(for: card)
+                            cardView(for: card)
                         }
                     }
                     .padding(4)
