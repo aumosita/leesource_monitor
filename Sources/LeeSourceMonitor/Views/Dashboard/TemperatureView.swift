@@ -12,6 +12,12 @@ struct TemperatureView: View {
                 // Overlapping line chart (taller)
                 if !history.isEmpty {
                     let sortedSensors = metrics.sensors.sorted { $0.name < $1.name }
+
+                    // Dynamic Y range from all history values
+                    let allValues = history.values.flatMap { $0.map(\.value) }
+                    let minTemp = max((allValues.min() ?? 20) - 5, 0)
+                    let maxTemp = (allValues.max() ?? 100) + 5
+
                     Chart {
                         ForEach(Array(sortedSensors.enumerated()), id: \.element.id) { index, sensor in
                             let samples = history[sensor.name] ?? []
@@ -26,6 +32,7 @@ struct TemperatureView: View {
                             }
                         }
                     }
+                    .chartYScale(domain: minTemp...maxTemp)
                     .chartYAxis {
                         AxisMarks(position: .leading) { value in
                             AxisValueLabel {
