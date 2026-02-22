@@ -31,12 +31,18 @@ struct MemoryMetrics: Sendable {
     var wiredBytes: UInt64 = 0
     var compressedBytes: UInt64 = 0
     var freeBytes: UInt64 = 0
-    var purgeableBytes: UInt64 = 0
-    var speculativeBytes: UInt64 = 0
-    var appMemoryBytes: UInt64 = 0
     var pressure: Double = 0  // percentage
     var readBytesPerSec: Double = 0   // page-ins
     var writeBytesPerSec: Double = 0  // page-outs
+
+    // Convenience GB accessors
+    private static let bytesPerGB: Double = 1_073_741_824
+    var totalGB: Double { Double(totalBytes) / Self.bytesPerGB }
+    var usedGB: Double { Double(usedBytes) / Self.bytesPerGB }
+    var appGB: Double { Double(activeBytes) / Self.bytesPerGB }
+    var systemGB: Double { Double(wiredBytes) / Self.bytesPerGB }
+    var compressedGB: Double { Double(compressedBytes) / Self.bytesPerGB }
+    var freeGB: Double { Double(freeBytes) / Self.bytesPerGB }
 }
 
 // MARK: - Network Metrics
@@ -52,7 +58,6 @@ struct GPUMetrics: Sendable {
     var deviceUtilization: Double = 0
     var rendererUtilization: Double = 0
     var tilerUtilization: Double = 0
-    var allocatedSystemMemory: UInt64 = 0
     var inUseSystemMemory: UInt64 = 0
 }
 

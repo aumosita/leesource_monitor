@@ -60,9 +60,12 @@ struct DashboardView: View {
         case .memory:
             MemoryChartView(
                 metrics: monitor.memory,
-                pressureHistory: monitor.memoryPressureHistory,
+                gpuMetrics: monitor.gpu,
                 readHistory: monitor.memoryReadHistory,
                 writeHistory: monitor.memoryWriteHistory,
+                appHistory: monitor.memoryAppHistory,
+                systemHistory: monitor.memorySystemHistory,
+                compressedHistory: monitor.memoryCompressedHistory,
                 expanded: expanded
             )
         case .gpu:

@@ -7,12 +7,6 @@ struct Formatters {
         return formatter.string(fromByteCount: Int64(value))
     }
 
-    static func bytesDecimal(_ value: UInt64) -> String {
-        let formatter = ByteCountFormatter()
-        formatter.countStyle = .decimal
-        return formatter.string(fromByteCount: Int64(value))
-    }
-
     static func speed(_ bytesPerSec: Double) -> String {
         if bytesPerSec < 1024 {
             return String(format: "%.0f B/s", bytesPerSec)

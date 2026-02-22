@@ -16,9 +16,11 @@ final class SystemMonitor {
     // History for charts (last 60 seconds)
     var cpuHistory: [MetricSample] = []
     var cpuCoreHistory: [[MetricSample]] = []
-    var memoryPressureHistory: [MetricSample] = []
     var memoryReadHistory: [MetricSample] = []
     var memoryWriteHistory: [MetricSample] = []
+    var memoryAppHistory: [MetricSample] = []
+    var memorySystemHistory: [MetricSample] = []
+    var memoryCompressedHistory: [MetricSample] = []
     var networkInHistory: [MetricSample] = []
     var networkOutHistory: [MetricSample] = []
     var gpuHistory: [MetricSample] = []
@@ -98,9 +100,11 @@ final class SystemMonitor {
         let memResult = memoryMonitor.getMemoryUsage(previous: memorySnapshot)
         memory = memResult.metrics
         memorySnapshot = memResult.snapshot
-        appendSample(&memoryPressureHistory, MetricSample(timestamp: now, value: memory.pressure, label: "Pressure"))
         appendSample(&memoryReadHistory, MetricSample(timestamp: now, value: memory.readBytesPerSec, label: "Read"))
         appendSample(&memoryWriteHistory, MetricSample(timestamp: now, value: memory.writeBytesPerSec, label: "Write"))
+        appendSample(&memoryAppHistory, MetricSample(timestamp: now, value: memory.appGB, label: "App"))
+        appendSample(&memorySystemHistory, MetricSample(timestamp: now, value: memory.systemGB, label: "System"))
+        appendSample(&memoryCompressedHistory, MetricSample(timestamp: now, value: memory.compressedGB, label: "Compressed"))
 
         // Disk (update less frequently - every 10 seconds)
         if Int(now.timeIntervalSince1970) % 10 == 0 || disk.volumes.isEmpty {

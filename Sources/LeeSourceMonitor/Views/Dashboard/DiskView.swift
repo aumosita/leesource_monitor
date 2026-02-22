@@ -50,6 +50,7 @@ struct DiskView: View {
                         .foregroundStyle(AppTheme.Colors.textTertiary)
                 }
             }
+            .animation(nil, value: metrics.volumes.count)
         }
     }
 }

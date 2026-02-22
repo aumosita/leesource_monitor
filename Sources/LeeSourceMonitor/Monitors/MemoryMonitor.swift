@@ -39,22 +39,15 @@ final class MemoryMonitor: Sendable {
             let wired = UInt64(vmStats.wire_count) * pageSize
             let compressed = UInt64(vmStats.compressor_page_count) * pageSize
             let free = UInt64(vmStats.free_count) * pageSize
-            let purgeable = UInt64(vmStats.purgeable_count) * pageSize
-            let speculative = UInt64(vmStats.speculative_count) * pageSize
 
-            // Used = Active + Inactive + Wired + Compressed (macOS style)
-            // App Memory = Active + Wired
             metrics.activeBytes = active
             metrics.inactiveBytes = inactive
             metrics.wiredBytes = wired
             metrics.compressedBytes = compressed
             metrics.freeBytes = free
-            metrics.purgeableBytes = purgeable
-            metrics.speculativeBytes = speculative
 
-            // macOS "Memory Used" = Total - Free - Purgeable - Speculative (approximate)
+            // macOS "Memory Used" = Active + Wired + Compressed + Inactive
             metrics.usedBytes = active + wired + compressed + inactive
-            metrics.appMemoryBytes = active + wired
 
             // Memory pressure
             let usedPercent = Double(metrics.usedBytes) / Double(memSize) * 100

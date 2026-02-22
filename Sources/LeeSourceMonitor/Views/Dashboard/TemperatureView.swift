@@ -13,10 +13,12 @@ struct TemperatureView: View {
                 if !history.isEmpty {
                     let sortedSensors = metrics.sensors.sorted { $0.name < $1.name }
 
-                    // Dynamic Y range from all history values
+                    // Dynamic Y range snapped to 5° steps to prevent jitter
                     let allValues = history.values.flatMap { $0.map(\.value) }
-                    let minTemp = max((allValues.min() ?? 20) - 5, 0)
-                    let maxTemp = (allValues.max() ?? 100) + 5
+                    let rawMin = allValues.min() ?? 20
+                    let rawMax = allValues.max() ?? 100
+                    let minTemp = max(floor((rawMin - 5) / 5) * 5, 0)
+                    let maxTemp = ceil((rawMax + 5) / 5) * 5
 
                     Chart {
                         ForEach(Array(sortedSensors.enumerated()), id: \.element.id) { index, sensor in
@@ -33,6 +35,8 @@ struct TemperatureView: View {
                         }
                     }
                     .chartYScale(domain: minTemp...maxTemp)
+                    .animation(nil, value: minTemp)
+                    .animation(nil, value: maxTemp)
                     .chartYAxis {
                         AxisMarks(position: .leading) { value in
                             AxisValueLabel {

@@ -9,10 +9,8 @@ enum AppTheme {
         static let cardBorder = Color.white.opacity(0.06)
 
         static let cpuGradientStart = Color(hue: 0.55, saturation: 0.7, brightness: 0.9)  // Cyan
-        static let cpuGradientEnd = Color(hue: 0.65, saturation: 0.8, brightness: 0.85)    // Blue
 
         static let gpuGradientStart = Color(hue: 0.8, saturation: 0.6, brightness: 0.9)    // Purple
-        static let gpuGradientEnd = Color(hue: 0.9, saturation: 0.7, brightness: 0.85)     // Magenta
 
         static let networkIn = Color(hue: 0.35, saturation: 0.7, brightness: 0.8)           // Green
         static let networkOut = Color(hue: 0.08, saturation: 0.8, brightness: 0.9)          // Orange

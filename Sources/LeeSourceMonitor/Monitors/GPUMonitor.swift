@@ -39,11 +39,6 @@ final class GPUMonitor: Sendable {
             if let tilerUtil = perfStats["Tiler Utilization %"] as? Int {
                 metrics.tilerUtilization = Double(tilerUtil)
             }
-            if let allocMem = perfStats["Alloc system memory"] as? UInt64 {
-                metrics.allocatedSystemMemory = allocMem
-            } else if let allocMem = perfStats["Alloc system memory"] as? Int {
-                metrics.allocatedSystemMemory = UInt64(allocMem)
-            }
             if let inUseMem = perfStats["In use system memory"] as? UInt64 {
                 metrics.inUseSystemMemory = inUseMem
             } else if let inUseMem = perfStats["In use system memory"] as? Int {

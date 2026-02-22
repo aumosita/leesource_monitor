@@ -16,12 +16,21 @@ struct GPUChartView: View {
             valueText: Formatters.percentage(metrics.deviceUtilization)
         ) {
             VStack(spacing: expanded ? 8 : 4) {
-                HStack(spacing: 8) {
-                    Text("Renderer: \(expanded ? "" : "")\(Formatters.percentage(metrics.rendererUtilization))")
-                        .font(.system(size: expanded ? 10 : 9, design: .rounded))
+                HStack(spacing: 4) {
+                    Text("Renderer:")
+                        .font(.system(size: expanded ? 10 : 9))
                         .foregroundStyle(AppTheme.Colors.textTertiary)
-                    Text("Tiler: \(Formatters.percentage(metrics.tilerUtilization))")
+                    Text(Formatters.percentage(metrics.rendererUtilization))
                         .font(.system(size: expanded ? 10 : 9, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(AppTheme.Colors.textTertiary)
+                        .frame(width: 38, alignment: .leading)
+                    Text("Tiler:")
+                        .font(.system(size: expanded ? 10 : 9))
+                        .foregroundStyle(AppTheme.Colors.textTertiary)
+                    Text(Formatters.percentage(metrics.tilerUtilization))
+                        .font(.system(size: expanded ? 10 : 9, design: .rounded))
+                        .monospacedDigit()
                         .foregroundStyle(AppTheme.Colors.textTertiary)
                     Spacer()
                 }
@@ -40,8 +49,12 @@ struct GPUChartView: View {
                 .frame(height: chartHeight)
 
                 HStack {
-                    Text("VRAM: \(Formatters.bytes(metrics.inUseSystemMemory))")
+                    Text("VRAM:")
+                        .font(.system(size: expanded ? 10 : 9))
+                        .foregroundStyle(AppTheme.Colors.textTertiary)
+                    Text(Formatters.bytes(metrics.inUseSystemMemory))
                         .font(.system(size: expanded ? 10 : 9, design: .rounded))
+                        .monospacedDigit()
                         .foregroundStyle(AppTheme.Colors.textTertiary)
                     Spacer()
                 }
