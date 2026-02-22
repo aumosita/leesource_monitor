@@ -24,7 +24,6 @@ struct GPUChartView: View {
                         .font(.system(size: expanded ? 10 : 9, design: .rounded))
                         .monospacedDigit()
                         .foregroundStyle(AppTheme.Colors.textTertiary)
-                        .frame(width: 38, alignment: .leading)
                     Text("Tiler:")
                         .font(.system(size: expanded ? 10 : 9))
                         .foregroundStyle(AppTheme.Colors.textTertiary)
@@ -34,6 +33,8 @@ struct GPUChartView: View {
                         .foregroundStyle(AppTheme.Colors.textTertiary)
                     Spacer()
                 }
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
 
                 Chart(history) { sample in
                     LineMark(
@@ -49,13 +50,12 @@ struct GPUChartView: View {
                 .frame(height: chartHeight)
 
                 HStack {
-                    Text("VRAM:")
-                        .font(.system(size: expanded ? 10 : 9))
-                        .foregroundStyle(AppTheme.Colors.textTertiary)
-                    Text(Formatters.bytes(metrics.inUseSystemMemory))
+                    Text("VRAM: \(Formatters.bytes(metrics.inUseSystemMemory))")
                         .font(.system(size: expanded ? 10 : 9, design: .rounded))
                         .monospacedDigit()
                         .foregroundStyle(AppTheme.Colors.textTertiary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                     Spacer()
                 }
             }

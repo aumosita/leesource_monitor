@@ -9,7 +9,7 @@ struct MetricCardView<Content: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
+            HStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(accentColor)
@@ -17,15 +17,18 @@ struct MetricCardView<Content: View>: View {
                 Text(title)
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(AppTheme.Colors.textPrimary)
+                    .lineLimit(1)
+                    .fixedSize()
 
-                Spacer()
+                Spacer(minLength: 2)
 
                 if let valueText {
                     Text(valueText)
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .monospacedDigit()
                         .foregroundStyle(accentColor)
-                        .frame(minWidth: 55, alignment: .trailing)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                 }
             }
 
